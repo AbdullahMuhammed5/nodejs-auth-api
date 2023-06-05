@@ -6,10 +6,12 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const globalErrorHandler = require('./controllers/errorController');
+const errorHandler = require('./middlewares/errorHandlers/errorHandler');
 
 const authRouter = require('./routes/api/authRoutes');
-
+const { protect, restrictTo } = require('./middlewares/auth');
+const { ROLES } = require('./models/userModel');
+const AppError = require('./utils/appError');
 
 // Start express app
 const app = express();
@@ -53,6 +55,22 @@ app.use(xss());
 // ROUTES
 app.use('/api/v1/users', authRouter);
 
-app.use(globalErrorHandler);
+app.get('/api/v1/products/list', protect, restrictTo(ROLES.ADMIN, ROLES.SUPERVISOR), function(req, res){
+    return res.end().status(200).json({status: "success"});
+});
+
+app.delete('/api/v1/products/delete', protect, restrictTo(ROLES.ADMIN), function(req, res){
+    return res.end().status(200).json({status: "success"});
+});
+
+app.get('/api/v1/protected', protect, function(req, res){
+    return res.end().status(200);
+});
+
+app.all('*', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(errorHandler);
 
 module.exports = app; 

@@ -1,26 +1,17 @@
-const AppError = require('./../utils/appError');
+const AppError = require('../../utils/appError');
 const { 
   handleValidationErrorDB, 
   handleDuplicateFieldsDB 
-} = require('../middlewares/errorHandlers/schemaValidationErrors');
+} = require('./schemaValidationErrors');
 
-const handleCastErrorDB = err => {
-  const message = `Invalid ${err.path}: ${err.value}.`;
-  return new AppError(message, 400);
-};
+const handleCastErrorDB = err => new AppError(`Invalid ${err.path}: ${err.value}.`, 400);
 
-const handleJWTError = () => new AppError('Invalid token. Please log in again!', 401);
+const handleJWTError = () => new AppError('Invalid token.', 401);
 
 const handleJWTExpiredError = () => new AppError('Your token has expired! Please log in again.', 401);
 
 const handle = (err, req, res, withStack) => {
   if (req.originalUrl.startsWith('/api')) {
-    if(err.statusCode === 401){
-      return res.status(err.statusCode).json({
-        status: err.status,
-        message: "Missing Api key!",
-      });
-    }
     if(err.statusCode === 422){
       return res.status(err.statusCode).json({
         status: err.status,
@@ -62,5 +53,7 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     handle(error, req, res, false);
   }
+
+  return next(error)
 };
 

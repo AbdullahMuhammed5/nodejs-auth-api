@@ -48,3 +48,20 @@ exports.protect = catchAsync(async (req, res, next) => {
     res.locals.user = currentUser;
     next();
 });
+
+exports.restrictTo = (...roles) => {
+    return async (req, res, next) => {
+        const token = req.cookies.jwt || req.headers.authorization.split(' ')[1];
+
+        const data = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+        if (!roles.includes(data.role)) {
+            return next(
+                new AppError('You do not have permission to perform this action', 403)
+            );
+        }
+
+        next();
+    };
+};
+

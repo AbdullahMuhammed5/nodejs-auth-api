@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+const ROLES = {
+  ADMIN: "ADMIN",
+  SUPERVISOR: "SUPERVISOR"
+}
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -43,7 +48,11 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false
   },
-  // Todo: add role column
+  role:{
+    type: String,
+    default: ROLES.SUPERVISOR,
+    enum: Object.keys(ROLES)
+  }
 },
 {
   toJSON: {
@@ -120,3 +129,5 @@ userSchema.methods.createPasswordResetToken = function() {
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+
+module.exports.ROLES = ROLES;
