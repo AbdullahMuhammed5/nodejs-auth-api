@@ -1,5 +1,5 @@
 {
-  "name": "auth-sys-nodejs",
+  "name": "nodejs-auth-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
