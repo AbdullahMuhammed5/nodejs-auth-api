@@ -50,7 +50,7 @@ module.exports = (err, req, res, next) => {
 
   if (process.env.NODE_ENV === 'development') {
     handle(error, req, res, true);
-  } else if (process.env.NODE_ENV === 'production') {
+  } else {
     handle(error, req, res, false);
   }
 

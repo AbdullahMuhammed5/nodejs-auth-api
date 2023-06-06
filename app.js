@@ -52,7 +52,7 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
-// ROUTES
+// Routes
 app.use('/api/v1/users', authRouter);
 
 app.get('/api/v1/products/list', protect, restrictTo(ROLES.ADMIN, ROLES.SUPERVISOR), function(req, res){
